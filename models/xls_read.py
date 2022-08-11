@@ -17,8 +17,11 @@ class ReadXls(models.TransientModel):
         print("checking")
         print("Executing")
 
-        client = pygsheets.authorize(service_account_file='odoo-custom/xlsleads/models/keys.json')
-        sheet1 = client.open_by_url('https://docs.google.com/spreadsheets/d/1joEMBnP87NFMrB0N11C0SzqvKYmn0CxKYv4hvQh2yUA')
+        keys_path =self.env['ir.config_parameter'].sudo().get_param('xlsleads.keys_path')
+        speadsheet_link = self.env['ir.config_parameter'].sudo().get_param('xlsleads.drive_link')
+
+        client = pygsheets.authorize(service_account_file=keys_path)
+        sheet1 = client.open_by_url(speadsheet_link)
         worksheet = sheet1.sheet1
         cells = worksheet.get_all_records(empty_value='', head=1, majdim='ROWS')
 
