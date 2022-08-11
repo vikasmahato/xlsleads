@@ -6,5 +6,5 @@ from odoo import models, fields, api
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    drive_link = fields.Char(string='drive_link', config_parameter='xlsleads.drive_link')
-    keys_path = fields.Char(string='keys_path', config_parameter='xlsleads.keys_path')
+    speadsheet_link = fields.Char(string='Spreadsheet Link', config_parameter='xlsleads.speadsheet_link')
+    keys_path = fields.Char(string='Keys Path', config_parameter='xlsleads.keys_path')

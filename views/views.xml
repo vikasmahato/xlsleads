@@ -11,8 +11,8 @@
                     <h2>Ops Leads Management</h2>
                     <div class="row mt16 o_settings_container">
                         <div class="o_setting_left_pane">
-                            <label for="drive_link"/>
-                            <field name="drive_link" />
+                            <label for="speadsheet_link"/>
+                            <field name="speadsheet_link" />
                         </div>
                         <div class="o_setting_left_pane">
                             <label for="keys_path"/>
