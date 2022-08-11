@@ -1,1 +1,1 @@
-from . import xls_read, res_config_settings
+from . import xls_read, res_config_settings, opportunity_inherit

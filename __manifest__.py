@@ -1,5 +1,5 @@
 {
-    'name' : 'Excel Leads v2',
+    'name' : 'Excel Leads',
     'version' : '1.0.0',
     'summary': 'Excel Leads',
     'sequence': -100,
@@ -7,7 +7,8 @@
     'category': 'Spreadsheet',
     'data': [
         'data/cron.xml',
-        'views/views.xml'
+        'views/views.xml',
+        'views/crm_lead.xml'
     ],
 
     'depends': ['base', 'crm'],
