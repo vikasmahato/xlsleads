@@ -18,7 +18,7 @@ class ReadXls(models.TransientModel):
         print("Executing")
 
         keys_path =self.env['ir.config_parameter'].sudo().get_param('xlsleads.keys_path')
-        speadsheet_link = self.env['ir.config_parameter'].sudo().get_param('xlsleads.drive_link')
+        speadsheet_link = self.env['ir.config_parameter'].sudo().get_param('xlsleads.speadsheet_link')
 
         client = pygsheets.authorize(service_account_file=keys_path)
         sheet1 = client.open_by_url(speadsheet_link)
