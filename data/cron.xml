@@ -8,6 +8,7 @@
             <field name="doall" eval="False"/>
             <field name="model_id" ref="model_cron_xls"/>
             <field name="code">model.cron_test()</field>
+
             <field name="state">code</field>
         </record>
     </data>
