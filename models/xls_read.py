@@ -1,5 +1,9 @@
 from __future__ import print_function
+
+
 import traceback
+
+
 from odoo import fields, models, api
 import pygsheets
 import requests
@@ -14,19 +18,24 @@ _logger = logging.getLogger(__name__)
 
 
 
+
 class ReadXls(models.TransientModel):
     _name = 'cron.xls'
+
+    def get_source_id_from_odoo(self, name):
+        ids = self.env['utm.source'].search([('name', '=', name)], limit=1).id
+        return ids
 
     @api.model
     def cron_test(self):
         print("checking")
         print("Executing")
 
-        keys_path =self.env['ir.config_parameter'].sudo().get_param('xlsleads.keys_path')
-        speadsheet_link = self.env['ir.config_parameter'].sudo().get_param('xlsleads.speadsheet_link')
+        keys_path = self.env['ir.config_parameter'].sudo().get_param('xlsleads.keys_path')
+        spreadsheet_link = self.env['ir.config_parameter'].sudo().get_param('xlsleads.spreadsheet_link')
 
         client = pygsheets.authorize(service_account_file=keys_path)
-        sheet1 = client.open_by_url(speadsheet_link)
+        sheet1 = client.open_by_url(spreadsheet_link)
         worksheet = sheet1.sheet1
         cells = worksheet.get_all_records(empty_value='', head=1, majdim='ROWS')
 
@@ -37,40 +46,41 @@ class ReadXls(models.TransientModel):
             'name': lead['customer_requirement'],
             'phone': lead['customer_number'],
             'lead_qual': lead['your_name'],
-            'lead_qual_num': lead['your_number']
+            'lead_qual_num': lead['your_number'],
+            'source_id': self.get_source_id_from_odoo('OPS')
         } for lead in cells]
 
         for lead in leads:
             try:
                 self.env['crm.lead'].create(lead)
             except:
-                tb =traceback.format_exc()
+                tb = traceback.format_exc()
                 _logger.error(tb)
                 pass
         # worksheet.delete_rows(2, number=end_row)
 
-    def aud_link(self,file,name,id):
+    def aud_link(self, file, name, id):
         if not file:
             return
         contents = urlopen(file).read()
-        x= str(date.today())+'_'+name
+        x = str(date.today()) + '_' + name
         attachment_id = self.env['ir.attachment'].create({
-                        'name': x,
-                        'datas': base64.b64encode(contents),
-                        'mimetype': 'audio/mpeg',
-                        'type': 'binary',
-                        'display_name': name,
-                        'id': id,
-                        'res_model': 'crm_lead'
-                    })
+            'name': x,
+            'datas': base64.b64encode(contents),
+            'mimetype': 'audio/mpeg',
+            'type': 'binary',
+            'display_name': name,
+            'id': id,
+            'res_model': 'crm_lead'
+        })
         return attachment_id
-    def record_test(self,File):
-        if(len(File)==0):
+
+    def record_test(self, File):
+        if (len(File) == 0):
             return
         Token = self.env['ir.config_parameter'].sudo().get_param('my_operator.token')
         authorization = self.env['ir.config_parameter'].sudo().get_param('my_operator.authorization')
-        url = "https://developers.myoperator.co/recordings/link?token="+str(Token)+"&file=" + str(File)
-
+        url = "https://developers.myoperator.co/recordings/link?token=" + str(Token) + "&file=" + str(File)
 
         payload = {}
         files = {}
@@ -102,9 +112,10 @@ class ReadXls(models.TransientModel):
         response = requests.request("POST", url, headers=headers, data=payload, files=files)
 
         json_data = json.loads(response.text)
-        if(len(json_data['data']['hits'])>0):
+
+        if (len(json_data['data']['hits']) > 0):
             for lead in json_data['data']['hits']:
-                if(lead['_source']['department_name']=='Sales'):
+                if lead['_source']['department_name'] == 'Rent':
                     leads = [
                         dict(active=True, name='Inbound leads', contact_name=lead['_source']['caller_number_raw'],
                              phone=lead['_source']['caller_number'],
@@ -112,6 +123,9 @@ class ReadXls(models.TransientModel):
                              lead_qual=lead['_source']['log_details'][0]['received_by'][0]['name'],
                              lead_qual_num=lead['_source']['log_details'][0]['received_by'][0][
                                  'contact_number_raw'],
+
+                             source_id=self.get_source_id_from_odoo('INBOUND'),
+
                              audio_link=self.aud_link(self.record_test(lead['_source']['filename']),
                                                       lead['_source']['log_details'][0]['received_by'][0]['name'],
                                                       lead['_source']['additional_parameters'][0]['vl']))]
@@ -124,5 +138,3 @@ class ReadXls(models.TransientModel):
                     tb = traceback.format_exc()
                     _logger.error(tb)
                     pass
-
-

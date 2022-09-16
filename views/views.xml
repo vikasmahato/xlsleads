@@ -13,6 +13,7 @@
                         <div class="o_setting_left_pane">
                             <label for="token" name="Token"/>
                             <field name="token" password="True"/>
+
                         </div>
                         <div class="o_setting_left_pane">
                            <label for="url" name="url"/>
@@ -23,6 +24,22 @@
                             <field name="authorization" password="True"/>
                         </div>
                     </div>
+                </div>
+                <h2>XLS Management</h2>
+                <div class="row mt16 o_settings_container">
+                        <div class="o_setting_left_pane">
+                            <label for="spreadsheet_link"/>
+                            <field name="spreadsheet_link" />
+
+                        </div>
+                        <div class="o_setting_left_pane">
+                           <label for="url" name="url"/>
+                            <field name="url" />
+                        </div>
+                        <div class="o_setting_left_pane">
+                           <label for="authorization" name="authorization"/>
+                            <field name="authorization" password="True"/>
+                        </div>
                 </div>
             </xpath>
         </field>
