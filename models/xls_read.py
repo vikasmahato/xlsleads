@@ -112,6 +112,7 @@ class ReadXls(models.TransientModel):
         response = requests.request("POST", url, headers=headers, data=payload, files=files)
 
         json_data = json.loads(response.text)
+
         if (len(json_data['data']['hits']) > 0):
             for lead in json_data['data']['hits']:
                 if lead['_source']['department_name'] == 'Rent':
@@ -122,7 +123,9 @@ class ReadXls(models.TransientModel):
                              lead_qual=lead['_source']['log_details'][0]['received_by'][0]['name'],
                              lead_qual_num=lead['_source']['log_details'][0]['received_by'][0][
                                  'contact_number_raw'],
+
                              source_id=self.get_source_id_from_odoo('INBOUND'),
+
                              audio_link=self.aud_link(self.record_test(lead['_source']['filename']),
                                                       lead['_source']['log_details'][0]['received_by'][0]['name'],
                                                       lead['_source']['additional_parameters'][0]['vl']))]
