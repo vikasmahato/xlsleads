@@ -7,25 +7,40 @@
         <field name="inherit_id" ref="base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('settings')]" position="inside">
-                <div class="app_settings_block" data-string="opsleads" string="opsleads" data-key="xlsleads">
-                    <h2>Ops Leads Management</h2>
+                <div class="app_settings_block" data-string="My Operator" string="My Operator" data-key="xlsleads">
+                    <h2>My Operator Management</h2>
                     <div class="row mt16 o_settings_container">
                         <div class="o_setting_left_pane">
-                            <label for="speadsheet_link"/>
-                            <field name="speadsheet_link" />
+                            <label for="token" name="Token"/>
+                            <field name="token" password="True"/>
+                        </div>
+                        <div class="o_setting_left_pane">
+                           <label for="url" name="url"/>
+                            <field name="url" />
+                        </div>
+                        <div class="o_setting_left_pane">
+                           <label for="authorization" name="authorization"/>
+                            <field name="authorization" password="True"/>
+                        </div>
+                    </div>
+                </div>
+                <h2>XLS Management</h2>
+                <div class="row mt16 o_settings_container">
+                        <div class="o_setting_left_pane">
+                            <label for="spreadsheet_link"/>
+                            <field name="spreadsheet_link" />
                         </div>
                         <div class="o_setting_left_pane">
                             <label for="keys_path"/>
                             <field name="keys_path"/>
                         </div>
-                    </div>
                 </div>
             </xpath>
         </field>
     </record>
 
       <record model="ir.actions.act_window" id="action_opsleads_config_settings">
-          <field name="name">opsleads</field>
+          <field name="name">My Operator</field>
           <field name="type">ir.actions.act_window</field>
           <field name="res_model">res.config.settings</field>
           <field name="view_id" ref="res_config_settings_view_form_xlsleads"/>
@@ -35,7 +50,7 @@
       </record>
 
 
-      <menuitem name="Ops Leads"
+      <menuitem name="My Opearator"
                 id="menu_opsleads_config"
                 parent="crm.crm_menu_config"
                 action="action_opsleads_config_settings"/>
