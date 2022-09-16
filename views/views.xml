@@ -30,15 +30,10 @@
                         <div class="o_setting_left_pane">
                             <label for="spreadsheet_link"/>
                             <field name="spreadsheet_link" />
-
                         </div>
                         <div class="o_setting_left_pane">
-                           <label for="url" name="url"/>
-                            <field name="url" />
-                        </div>
-                        <div class="o_setting_left_pane">
-                           <label for="authorization" name="authorization"/>
-                            <field name="authorization" password="True"/>
+                            <label for="keys_path"/>
+                            <field name="keys_path"/>
                         </div>
                 </div>
             </xpath>
