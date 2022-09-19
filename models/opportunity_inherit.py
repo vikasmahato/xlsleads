@@ -10,3 +10,5 @@ class CrmLead(models.Model):
 
     lead_qual = fields.Char(string="LQ Name")
     lead_qual_num = fields.Char(string="LQ Number")
+
+    audio_link = fields.Many2many('ir.attachment', string="Audio Link")
