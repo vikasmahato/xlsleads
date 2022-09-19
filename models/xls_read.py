@@ -1,9 +1,9 @@
 from __future__ import print_function
 
-
 import traceback
 
-
+import xmlrpc.client
+import socket
 from odoo import fields, models, api
 import pygsheets
 import requests
@@ -15,8 +15,6 @@ import time
 import base64
 
 _logger = logging.getLogger(__name__)
-
-
 
 
 class ReadXls(models.TransientModel):
@@ -115,7 +113,7 @@ class ReadXls(models.TransientModel):
 
         if (len(json_data['data']['hits']) > 0):
             for lead in json_data['data']['hits']:
-                if lead['_source']['department_name'] == 'Rent':
+                if lead['_source']['department_name'] == 'Rent' and lead['_source']['log_details']:
                     leads = [
                         dict(active=True, name='Inbound leads', contact_name=lead['_source']['caller_number_raw'],
                              phone=lead['_source']['caller_number'],
@@ -138,3 +136,58 @@ class ReadXls(models.TransientModel):
                     tb = traceback.format_exc()
                     _logger.error(tb)
                     pass
+
+    @api.model
+    def yimpl_test(self):
+        keys = {
+            'local': {
+                'url': 'https://ymipl.odoo.com',
+                'db': self.env['ir.config_parameter'].sudo().get_param('yimpl.db'),
+                'username': self.env['ir.config_parameter'].sudo().get_param('yimpl.username'),
+                'password': self.env['ir.config_parameter'].sudo().get_param('yimpl.password')
+            }
+        }
+
+        env = 'local'
+
+        url = keys[env]['url']
+        db = keys[env]['db']
+        username = keys[env]['username']
+        password = keys[env]['password']
+
+        common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
+
+        uid = common.authenticate(db, username, password, {})
+        models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
+        # ids = models.execute_kw(db, uid, password, 'crm.lead', 'search', [[]], {'limit': 1})
+        # x=models.execute_kw(db, uid, password, 'crm.lead', 'read', [ids], {'fields': ['source_id']})
+
+        ids = models.execute_kw(db, uid, password, 'crm.lead', 'search',
+                                [[['type', '=', 'opportunity'], ['active', '=', False], ['lost_reason', '=', 9]]],
+                                {'limit': 10})
+        cells = models.execute_kw(db, uid, password, 'crm.lead', 'read', [ids],
+                                  {'fields': ['contact_name', 'partner_name', 'name', 'mobile', 'tag_ids']})
+        id1 = models.execute_kw(db, uid, password, 'crm.tag', 'search',
+                                [[['name', '=', 'Transferred to BETA']]],
+                                {'limit': 20})
+
+        leads = [{
+            'contact_name': lead['contact_name'],
+            'partner_name': lead['partner_name'],
+            'name': lead['name'],
+            'phone': lead['mobile'],
+            'source_id': self.get_source_id_from_odoo('YIMPL')
+
+        } for lead in cells if (lead['tag_ids'] != id1)]
+
+        for lead in leads:
+            try:
+                self.env['crm.lead'].create(lead)
+                id1 = models.execute_kw(db, uid, password, 'crm.tag', 'search',
+                                        [[['name', '=', 'Transferred to BETA']]],
+                                        {'limit': 20})
+                models.execute_kw(db, uid, password, 'crm.lead', 'write', [ids, {'tag_ids': id1}])
+            except:
+                tb = traceback.format_exc()
+                _logger.error(tb)
+                pass
