@@ -21,7 +21,7 @@
                         </div>
                         <div class="o_setting_left_pane">
                            <label for="authorization" name="authorization"/>
-                            <field name="authorization" />
+                            <field name="authorization" password="True"/>
                         </div>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
                         </div>
                     <div class="o_setting_left_pane">
                             <label for="password"/>
-                            <field name="password" />
+                            <field name="password" password="True"/>
                         </div>
                 </div>
             </xpath>
