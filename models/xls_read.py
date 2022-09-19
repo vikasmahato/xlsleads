@@ -9,7 +9,6 @@ import pygsheets
 import requests
 from datetime import date
 import logging
-import json
 from urllib.request import urlopen
 import time
 import base64
