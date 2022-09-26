@@ -36,6 +36,21 @@
                             <field name="keys_path"/>
                         </div>
                 </div>
+                <h2>YIMPL</h2>
+                <div class="row mt16 o_settings_container">
+                        <div class="o_setting_left_pane">
+                            <label for="db"/>
+                            <field name="db" />
+                        </div>
+                        <div class="o_setting_left_pane">
+                            <label for="username"/>
+                            <field name="username"/>
+                        </div>
+                    <div class="o_setting_left_pane">
+                            <label for="password"/>
+                            <field name="password" password="True"/>
+                        </div>
+                </div>
             </xpath>
         </field>
     </record>

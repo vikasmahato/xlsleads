@@ -10,7 +10,8 @@
                     <field name="lead_qual"/>
                     <field name="lead_qual_num" />
 
-                    <field name="audio_link" type="base64" widget="many2many_binary"/>
+                    <field name="audio_link" attrs="{'invisible':[('name', '!=', 'Inbound leads')]}" type="base64"  widget="many2many_binary"/>
+
               </field>
 
           </field>
