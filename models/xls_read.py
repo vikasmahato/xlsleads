@@ -93,7 +93,7 @@ class ReadXls(models.TransientModel):
     @api.model
     def yml_test(self):
         print(1)
-        x = int(time.time())
+        x = int(time.time()) - 43200
         url = self.env['ir.config_parameter'].sudo().get_param('my_operator.url')
         token = self.env['ir.config_parameter'].sudo().get_param('my_operator.token')
         authorization = self.env['ir.config_parameter'].sudo().get_param('my_operator.authorization')
