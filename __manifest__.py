@@ -1,6 +1,6 @@
 {
     'name' : 'Excel Leads',
-    'version' : '3.0.0',
+    'version' : '4.0.0',
     'summary': 'Excel Leads',
     'sequence': -100,
     'description': """Generate python leads""",
