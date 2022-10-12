@@ -54,7 +54,7 @@ class ReadXls(models.TransientModel):
                 tb = traceback.format_exc()
                 _logger.error(tb)
                 pass
-        # worksheet.delete_rows(2, number=end_row)
+        worksheet.delete_rows(2, number=end_row)
 
     def aud_link(self, file, name, id):
         if not file:
