@@ -175,7 +175,8 @@ class ReadXls(models.TransientModel):
             'partner_name': lead['partner_name'],
             'name': lead['name'],
             'phone': lead['mobile'],
-            'source_id': self.get_source_id_from_odoo('YMIPL')
+            'source_id': self.get_source_id_from_odoo('YMIPL'),
+
 
         } for lead in cells if (lead['tag_ids'] != id1)]
 
