@@ -18,6 +18,9 @@ class CrmLead(models.Model):
     audio_link = fields.Many2many('ir.attachment', string="Audio Link")
 
     def write(self, vals):
+        if self.team_id.user_id.id == self._uid:
+            return super(CrmLead, self).write(vals)
+
         if self.lead_qual:
             if (self._uid != self.user_id.id) and self.type == 'lead':
                 raise ValidationError(_('You cant change Salesperson unless you are assigned to it!'))
