@@ -1,10 +1,17 @@
+# -*- coding: utf-8 -*-
+
 {
-    'name' : 'Excel Leads',
+    'name' : 'Lead Sources',
     'version' : '4.0.1',
-    'summary': 'Excel Leads',
+    'category': 'Sales/CRM',
+    'summary': 'Leads From Ops/Inbound/YMIPL',
+    'description': """Generate Leads from different sources""",
+    'author': "Ajay",
+    'website': "https://www.youngman.co.in/",
     'sequence': -100,
-    'description': """Generate python leads""",
-    'category': 'Spreadsheet',
+
+    'depends': ['base', 'crm'],
+
     'data': [
         'data/cron.xml',
         'data/cron_op.xml',
@@ -12,12 +19,7 @@
         'views/crm_lead.xml'
     ],
 
-    'depends': ['base', 'crm'],
-
-    'demo': [],
-
-    'installable': True,
     'application': True,
-
-    'license': 'LGPL-3',
+    'installable': True,
+    'auto_install': False,
 }
