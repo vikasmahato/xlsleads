@@ -50,11 +50,12 @@ class ReadXls(models.TransientModel):
         for lead in leads:
             try:
                 self.env['crm.lead'].create(lead)
+                worksheet.delete_rows(2, number=end_row)
             except:
                 tb = traceback.format_exc()
                 _logger.error(tb)
                 pass
-        worksheet.delete_rows(2, number=end_row)
+
 
     def aud_link(self, file, name, id):
         if not file:
@@ -97,7 +98,7 @@ class ReadXls(models.TransientModel):
         url = self.env['ir.config_parameter'].sudo().get_param('my_operator.url')
         token = self.env['ir.config_parameter'].sudo().get_param('my_operator.token')
         authorization = self.env['ir.config_parameter'].sudo().get_param('my_operator.authorization')
-        payload = {'token': token}
+        payload = {'token': token,'from': x}
         files = [
 
         ]
