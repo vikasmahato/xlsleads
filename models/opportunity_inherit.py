@@ -12,7 +12,8 @@ _logger = logging.getLogger(__name__)
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
-    lead_qual = fields.Char(string="LQ Name")
+    lead_generator = fields.Char(string="Lead Generator")
+    lead_qual = fields.Char(string="Lead Qualifier")
     lead_qual_num = fields.Char(string="LQ Number")
 
     audio_link = fields.Many2many('ir.attachment', string="Audio Link")
