@@ -30,7 +30,7 @@ class ReadXls(models.TransientModel):
 
         keys_path = self.env['ir.config_parameter'].sudo().get_param('xlsleads.keys_path')
         spreadsheet_link = self.env['ir.config_parameter'].sudo().get_param('xlsleads.spreadsheet_link')
-
+        default_ops_lead_qualifier = self.env['ir.config_parameter'].sudo().get_param('xlsleads.ops_lead_qualifier')
         client = pygsheets.authorize(service_account_file=keys_path)
         sheet1 = client.open_by_url(spreadsheet_link)
         worksheet = sheet1.sheet1
@@ -42,8 +42,9 @@ class ReadXls(models.TransientModel):
             'partner_name': lead['customer_company'],
             'name': lead['customer_requirement'],
             'phone': lead['customer_number'],
-            'lead_qual': lead['your_name'],
-            'lead_qual_num': lead['your_number'],
+            'lead_generator': lead['your_name'],
+            'lead_qualifier': self.env["res.users"].search([('login', '=', default_ops_lead_qualifier)]),
+            'lead_generator_number': lead['your_number'],
             'source_id': self.get_source_id_from_odoo('OPS')
         } for lead in cells]
 

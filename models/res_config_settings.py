@@ -9,6 +9,7 @@ class ResConfigSettings(models.TransientModel):
     authorization = fields.Char(string='Authorization', config_parameter='my_operator.authorization')
     url = fields.Char(string='Url', config_parameter='my_operator.url')
     spreadsheet_link = fields.Char(string='Spreadsheet Link', config_parameter='xlsleads.spreadsheet_link')
+    ops_lead_qualifier = fields.Char(string='Ops Lead Qualifier', config_parameter='xlsleads.ops_lead_qualifier')
     keys_path = fields.Char(string='Keys Path', config_parameter='xlsleads.keys_path')
     db = fields.Char(string='db', config_parameter='yimpl.db')
     username = fields.Char(string='username', config_parameter='yimpl.username')
