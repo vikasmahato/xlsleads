@@ -7,9 +7,9 @@
           <field name="inherit_id" ref="crm.crm_lead_view_form"/>
           <field name="arch" type="xml">
               <field name="user_id" position="before">
-                    <field name="lead_qual"/>
-                    <field name="lead_qual_num" />
-
+                    <field name="lead_generator"/>
+                    <field name="lead_generator_number" />
+                    <field name="lead_qualifier" />
                     <field name="audio_link" attrs="{'invisible':[('name', '!=', 'Inbound leads')]}" type="base64"  widget="many2many_binary"/>
 
               </field>

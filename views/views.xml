@@ -35,6 +35,10 @@
                             <label for="keys_path"/>
                             <field name="keys_path"/>
                         </div>
+                        <div class="o_setting_left_pane">
+                            <label for="ops_lead_qualifier"/>
+                            <field name="ops_lead_qualifier"/>
+                        </div>
                 </div>
                 <h2>YIMPL</h2>
                 <div class="row mt16 o_settings_container">
