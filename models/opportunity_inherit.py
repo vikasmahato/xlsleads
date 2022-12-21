@@ -12,10 +12,11 @@ _logger = logging.getLogger(__name__)
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
-    lead_qual = fields.Char(string="LQ Name")
-    lead_qual_num = fields.Char(string="LQ Number")
-
+    lead_generator = fields.Char(string="Lead Generator")
+    lead_qualifier = fields.Many2one('res.users', string='Lead Qualifier', help="Select a user who will qualify this lead")
+    lead_generator_number = fields.Char(string="Lead Generator Contact")
     audio_link = fields.Many2many('ir.attachment', string="Audio Link")
+    remote_identifier = fields.Char(string="Remote Identifier")
 
     # def write(self, vals):
     #     if self.team_id.user_id.id == self._uid:
