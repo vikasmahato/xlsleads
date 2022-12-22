@@ -80,33 +80,32 @@ class MyOpLeadsSync(models.TransientModel):
         leads = []
         if (len(json_data['data']['hits']) > 0):
             for lead in json_data['data']['hits']:
-                if lead['_source']['department_name'] == 'Rent' and lead['_source']['log_details']:
-                    my_op_lead_id = lead['_source']['additional_parameters'][0]['vl']
-
-                    crm_lead = self.env["crm.lead"].search([('remote_identifier', '=', my_op_lead_id)])
-
-                    if not crm_lead:
-                        self.env["res.users"].search([('login', '=', lead['_source']['log_details'][0]['received_by'][0]['email'])]),
-                        lq = self.env["res.users"].search([('login', '=', lead['_source']['log_details'][0]['received_by'][0]['email'])]),
-                        leads.append(
-                            dict(active=True, name='Inbound leads', contact_name=lead['_source']['caller_number_raw'],
-                                 phone=lead['_source']['caller_number'],
-                                 remote_identifier=my_op_lead_id,
-                                 lead_qualifier= lq[0].id if lq else False,
-                                 lead_generator = "My Operator",
-                                 description = lead['_source']["comments"][0]["text"] if len(lead['_source']["comments"]) > 0 else False,
-                                 source_id=self.get_source_id_from_odoo('INBOUND'),
-                                 audio_link=self.aud_link(self.record_test(lead['_source']['filename']),
-                                                          lead['_source']['log_details'][0]['received_by'][0]['name'],
-                                                          lead['_source']['additional_parameters'][0]['vl'])))
-                    else:
-                        _logger.info("Lead with remote_identifier " + my_op_lead_id + " exists. Skipping")
-
-            for lead in leads:
                 try:
-                    self.env['crm.lead'].create(lead)
-                    _logger.info("Created lead :" +  str(lead))
+                    if lead['_source']['department_name'] == 'Rent' and lead['_source']['log_details']:
+                        my_op_lead_id = lead['_source']['additional_parameters'][0]['vl']
+
+                        crm_lead = self.env["crm.lead"].search([('remote_identifier', '=', my_op_lead_id)])
+
+                        if not crm_lead:
+                            self.env["res.users"].search([('login', '=', lead['_source']['log_details'][0]['received_by'][0]['email'])]),
+                            lq = self.env["res.users"].search([('login', '=', lead['_source']['log_details'][0]['received_by'][0]['email'])]),
+                            leads.append(
+                                dict(active=True, name='Inbound leads', contact_name=lead['_source']['caller_number_raw'],
+                                     phone=lead['_source']['caller_number'],
+                                     remote_identifier=my_op_lead_id,
+                                     lead_qualifier= lq[0].id if lq else False,
+                                     lead_generator = "My Operator",
+                                     description = lead['_source']["comments"][0]["text"] if len(lead['_source']["comments"]) > 0 else False,
+                                     source_id=self.get_source_id_from_odoo('INBOUND'),
+                                     audio_link=self.aud_link(self.record_test(lead['_source']['filename']),
+                                                              lead['_source']['log_details'][0]['received_by'][0]['name'],
+                                                              lead['_source']['additional_parameters'][0]['vl'])))
+                            self.env['crm.lead'].create(lead)
+                            _logger.info("Created lead :" +  str(lead))
+                        else:
+                            _logger.info("Lead with remote_identifier " + my_op_lead_id + " exists. Skipping")
                 except:
+                    _logger.error("Lead Failed " + str(lead))
                     tb = traceback.format_exc()
                     _logger.error(tb)
                     pass
