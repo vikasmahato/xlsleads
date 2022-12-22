@@ -92,18 +92,8 @@ class MyOpLeadsSync(models.TransientModel):
                         self.env["res.users"].search([('login', '=', lead['_source']['log_details'][0]['received_by'][0]['email'])]),
                         lq = self.env["res.users"].search([('login', '=', lead['_source']['log_details'][0]['received_by'][0]['email'])]),
 
-                        lead_data = {
-                            'active':True,
-                            'name': 'Inbound leads',
-                            'contact_name':lead['_source']['caller_number_raw'],
-                            'phone':lead['_source']['caller_number'],
-                            'remote_identifier':my_op_lead_id,
-                            'lead_qualifier': lq[0].id if lq else False,
-                            'lead_generator': "My Operator",
-                            'description': lead['_source']["comments"][0]["text"] if len(lead['_source']["comments"]) > 0 else False,
-                            'source_id': self.get_source_id_from_odoo('INBOUND'),
-                            'audio_link': self._get_audio_link(self.record_test(lead['_source']['filename']), lead['_source']['log_details'][0]['received_by'][0]['name'], lead['_source']['additional_parameters'][0]['vl'])
-                        }
+                        lead_data = self._get_lead_data(lead, lead_data, lq, my_op_lead_id)
+
                         self.env['crm.lead'].create(lead_data)
                         _logger.info("Created lead "+ str(i) +":" +  str(lead_data))
                     else:
@@ -115,3 +105,20 @@ class MyOpLeadsSync(models.TransientModel):
                 tb = traceback.format_exc()
                 _logger.error(tb)
                 pass
+
+    def _get_lead_data(self, lead, lead_data, lq, my_op_lead_id):
+        lead_data = {
+            'active': True,
+            'name': 'Inbound leads',
+            'contact_name': lead['_source']['caller_number_raw'],
+            'phone': lead['_source']['caller_number'],
+            'remote_identifier': my_op_lead_id,
+            'lead_qualifier': lq[0].id if lq else False,
+            'lead_generator': "My Operator",
+            'description': lead['_source']["comments"][0]["text"] if len(lead['_source']["comments"]) > 0 else False,
+            'source_id': self.get_source_id_from_odoo('INBOUND'),
+            'audio_link': self._get_audio_link(self.record_test(lead['_source']['filename']),
+                                               lead['_source']['log_details'][0]['received_by'][0]['name'],
+                                               lead['_source']['additional_parameters'][0]['vl'])
+        }
+        return lead_data
