@@ -50,7 +50,8 @@ class YmplLeadsSync(models.TransientModel):
             'phone': lead['mobile'],
             'source_id': self.get_source_id_from_odoo('YMIPL'),
             'remote_identifier': lead["id"],
-            'description': lead["description"]
+            'description': lead["description"],
+            'lead_generator': "Youngman Manufacturing"
 
         } for lead in cells if (lead['tag_ids'] != id1)]
 
