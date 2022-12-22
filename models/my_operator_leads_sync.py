@@ -93,6 +93,7 @@ class MyOpLeadsSync(models.TransientModel):
                                  phone=lead['_source']['caller_number'],
                                  remote_identifier=my_op_lead_id,
                                  lead_qualifier= lq[0].id if lq else False,
+                                 lead_generator = "My Operator",
                                  description = lead['_source']["comments"][0]["text"] if len(lead['_source']["comments"]) > 0 else False,
                                  source_id=self.get_source_id_from_odoo('INBOUND'),
                                  audio_link=self.aud_link(self.record_test(lead['_source']['filename']),
