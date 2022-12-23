@@ -62,6 +62,12 @@ class MyOpLeadsSync(models.TransientModel):
         url = self.env['ir.config_parameter'].sudo().get_param('my_operator.url')
         token = self.env['ir.config_parameter'].sudo().get_param('my_operator.token')
         authorization = self.env['ir.config_parameter'].sudo().get_param('my_operator.authorization')
+        youngman_india_myoperator_departments = self.env['ir.config_parameter'].sudo().get_param('my_operator.youngman_india_myoperator_departments')
+
+        departments = youngman_india_myoperator_departments.split(",") if youngman_india_myoperator_departments else []
+        departments = [s.strip().lower() for s in departments]
+
+
         payload = {'token': token,'from': x}
         files = [
 
@@ -83,35 +89,41 @@ class MyOpLeadsSync(models.TransientModel):
         for lead in lead_data:
             i=i+1
             try:
-                if lead['_source']['department_name'] == 'Rent' and lead['_source']['log_details']:
-                    my_op_lead_id = lead['_source']['additional_parameters'][0]['vl']
-
+                my_op_lead_id = lead['_source']['additional_parameters'][0]['vl']
+                if lead['_source']['department_name'].strip().lower() in departments and lead['_source']['log_details']:
                     crm_lead = self.env["crm.lead"].search([('remote_identifier', '=', my_op_lead_id)])
 
                     if not crm_lead:
                         self.env["res.users"].search([('login', '=', lead['_source']['log_details'][0]['received_by'][0]['email'])]),
                         lq = self.env["res.users"].search([('login', '=', lead['_source']['log_details'][0]['received_by'][0]['email'])]),
 
-                        lead_data = {
-                            'active':True,
-                            'name': 'Inbound leads',
-                            'contact_name':lead['_source']['caller_number_raw'],
-                            'phone':lead['_source']['caller_number'],
-                            'remote_identifier':my_op_lead_id,
-                            'lead_qualifier': lq[0].id if lq else False,
-                            'lead_generator': "My Operator",
-                            'description': lead['_source']["comments"][0]["text"] if len(lead['_source']["comments"]) > 0 else False,
-                            'source_id': self.get_source_id_from_odoo('INBOUND'),
-                            'audio_link': self._get_audio_link(self.record_test(lead['_source']['filename']), lead['_source']['log_details'][0]['received_by'][0]['name'], lead['_source']['additional_parameters'][0]['vl'])
-                        }
+                        lead_data = self._get_lead_data(lead, lead_data, lq, my_op_lead_id)
+
                         self.env['crm.lead'].create(lead_data)
                         _logger.info("Created lead "+ str(i) +":" +  str(lead_data))
                     else:
                         _logger.info("Lead skipped " + str(i) + ": "  + my_op_lead_id + " exists. Skipping")
                 else:
-                    _logger.info("Lead skipped " + str(i) + ": "  "Recieved Manufacturing Lead")
+                    _logger.info("Lead skipped " + str(i) + ": " + my_op_lead_id + "Recieved Manufacturing Lead" + str(lead))
             except:
                 _logger.error("Lead Failed " + str(i) + ": " + str(lead))
                 tb = traceback.format_exc()
                 _logger.error(tb)
                 pass
+
+    def _get_lead_data(self, lead, lead_data, lq, my_op_lead_id):
+        lead_data = {
+            'active': True,
+            'name': 'Inbound leads',
+            'contact_name': lead['_source']['caller_number_raw'],
+            'phone': lead['_source']['caller_number'],
+            'remote_identifier': my_op_lead_id,
+            'lead_qualifier': lq[0].id if lq else False,
+            'lead_generator': "My Operator",
+            'description': lead['_source']["comments"][0]["text"] if len(lead['_source']["comments"]) > 0 else False,
+            'source_id': self.get_source_id_from_odoo('INBOUND'),
+            'audio_link': self._get_audio_link(self.record_test(lead['_source']['filename']),
+                                               lead['_source']['log_details'][0]['received_by'][0]['name'],
+                                               lead['_source']['additional_parameters'][0]['vl'])
+        }
+        return lead_data
