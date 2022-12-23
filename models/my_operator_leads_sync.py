@@ -62,6 +62,12 @@ class MyOpLeadsSync(models.TransientModel):
         url = self.env['ir.config_parameter'].sudo().get_param('my_operator.url')
         token = self.env['ir.config_parameter'].sudo().get_param('my_operator.token')
         authorization = self.env['ir.config_parameter'].sudo().get_param('my_operator.authorization')
+        youngman_india_myoperator_departments = self.env['ir.config_parameter'].sudo().get_param('my_operator.youngman_india_myoperator_departments')
+
+        departments = youngman_india_myoperator_departments.split(",") if youngman_india_myoperator_departments else []
+        departments = [s.strip().lower() for s in departments]
+
+
         payload = {'token': token,'from': x}
         files = [
 
@@ -83,9 +89,8 @@ class MyOpLeadsSync(models.TransientModel):
         for lead in lead_data:
             i=i+1
             try:
-                if lead['_source']['department_name'] == 'Rent' and lead['_source']['log_details']:
-                    my_op_lead_id = lead['_source']['additional_parameters'][0]['vl']
-
+                my_op_lead_id = lead['_source']['additional_parameters'][0]['vl']
+                if lead['_source']['department_name'].strip().lower() in departments and lead['_source']['log_details']:
                     crm_lead = self.env["crm.lead"].search([('remote_identifier', '=', my_op_lead_id)])
 
                     if not crm_lead:
@@ -99,7 +104,7 @@ class MyOpLeadsSync(models.TransientModel):
                     else:
                         _logger.info("Lead skipped " + str(i) + ": "  + my_op_lead_id + " exists. Skipping")
                 else:
-                    _logger.info("Lead skipped " + str(i) + ": "  "Recieved Manufacturing Lead")
+                    _logger.info("Lead skipped " + str(i) + ": " + my_op_lead_id + "Recieved Manufacturing Lead" + str(lead))
             except:
                 _logger.error("Lead Failed " + str(i) + ": " + str(lead))
                 tb = traceback.format_exc()

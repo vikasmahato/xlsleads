@@ -23,6 +23,10 @@
                            <label for="authorization" name="authorization"/>
                             <field name="authorization" password="True"/>
                         </div>
+                        <div class="o_setting_left_pane">
+                            <label for="youngman_india_myoperator_departments"/>
+                            <field name="youngman_india_myoperator_departments"/>
+                        </div>
                     </div>
                 </div>
                 <h2>XLS Management</h2>
