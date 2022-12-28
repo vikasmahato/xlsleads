@@ -66,6 +66,13 @@
                         </div>
                     </div>
 
+                    <div class="row mt16 o_settings_container">
+                        <div class="o_setting_left_pane">
+                            <label for="passive_customer_lq_emails"/>
+                            <field name="passive_customer_lq_emails" />
+                        </div>
+                    </div>
+
                 </div>
 
             </xpath>
