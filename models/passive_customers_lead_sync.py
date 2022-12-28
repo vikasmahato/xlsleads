@@ -15,6 +15,10 @@ class PassiveLeadSync(models.TransientModel):
         ids = self.env['utm.source'].search([('name', '=', 'PASSIVE CUSTOMER LEAD')], limit=1)
         return ids.id if ids else False
 
+    def _get_default_country(self):
+        country = self.env['res.country'].search([('code', '=', 'IN')], limit=1)
+        return country.id
+
     def get_lead_qualifier_ids(self, passive_customer_lq_emails):
         team_id = self.env['crm.team'].search([('name', '=', 'LQ')]).id
         all_lqs =  self.env['crm.team.member'].search([('crm_team_id', '=', team_id)]).user_id.ids
@@ -40,16 +44,26 @@ class PassiveLeadSync(models.TransientModel):
         if response.ok:
             lead_qualifiers = self.get_lead_qualifier_ids(passive_customer_lq_emails)
             source_id = self.get_source_id_from_odoo()
-            leads = []
-
             count_lq = len(lead_qualifiers)
+
+            country_id = self._get_default_country()
 
             records = response.json()
 
+            state_ids = {}
+
             for i in range(len(records)):
                 existing_lead = self.env['crm.lead'].search([('remote_identifier', '=', records[i]['customer_masters_id']), ('source_id', '=', source_id), ('active', '=', True)], limit=1)
+
+                state_id = None
+                if records[i]['state_code'] in state_ids:
+                    state_id = state_ids[records[i]['state_code']]
+                else:
+                    state = self.env['res.country.state'].search([('code', '=', records[i]['state_code']), ('country_id', '=', country_id)], limit=1)
+                    state_ids[records[i]['state_code']] = state.id if state else False
+
                 if not existing_lead:
-                    leads.append({
+                    lead = {
                         'name': 'PCL: ' + records[i]['company'],
                         'contact_name': records[i]['contact_name'],
                         'partner_name': records[i]['company'],
@@ -58,10 +72,13 @@ class PassiveLeadSync(models.TransientModel):
                         'source_id': source_id,
                         'email_from': records[i]['email'],
                         'description': "Last challn Recieving Date: " + records[i]['last_challan_recieving_date'],
-                        'remote_identifier': records[i]['customer_masters_id']
-                    })
+                        'remote_identifier': records[i]['customer_masters_id'],
+                        'state_id': state_id
+                    }
+                    self.env['crm.lead'].create([lead])
+                    _logger.info("Create lead with remote_identifier {}, source_id {}.".format( records[i]['customer_masters_id'], source_id))
 
-            self.env['crm.lead'].create(leads)
+
 
 
 
