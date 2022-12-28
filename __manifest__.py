@@ -17,7 +17,8 @@
         'data/cron_op.xml',
         'data/cron_ympl.xml',
         'views/views.xml',
-        'views/crm_lead.xml'
+        'views/crm_lead.xml',
+        'data/cron_passive.xml'
     ],
 
     'application': True,

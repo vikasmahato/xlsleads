@@ -58,6 +58,13 @@
                             <field name="password" password="True"/>
                         </div>
                     </div>
+                    <h2>Passive Customers</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="o_setting_left_pane">
+                            <label for="passive_customer_endpoint"/>
+                            <field name="passive_customer_endpoint" />
+                        </div>
+                    </div>
 
                 </div>
 

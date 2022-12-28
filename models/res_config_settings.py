@@ -15,4 +15,5 @@ class ResConfigSettings(models.TransientModel):
     db = fields.Char(string='db', config_parameter='yimpl.db')
     username = fields.Char(string='username', config_parameter='yimpl.username')
     password = fields.Char(string='password', config_parameter='yimpl.password')
+    passive_customer_endpoint = fields.Char(string='Passive customers Endpoint', config_parameter='passive.passive_customer_endpoint')
 

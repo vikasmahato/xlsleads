@@ -1,1 +1,1 @@
-from . import my_operator_leads_sync, ops_lead_sync, ympl_leads_sync, res_config_settings, opportunity_inherit
+from . import my_operator_leads_sync, ops_lead_sync, ympl_leads_sync, passive_customers_lead_sync, res_config_settings, opportunity_inherit
