@@ -37,8 +37,7 @@ class MyOpLeadsSync(models.TransientModel):
             'res_model': 'crm.lead',
             'res_id': lead_id,
             'create_uid': user_id,
-            'write_uid': user_id,
-            'website_id': 1
+            'write_uid': user_id
         })
         return attachment_id
 
@@ -63,7 +62,8 @@ class MyOpLeadsSync(models.TransientModel):
     @api.model
     def my_operator_lead_sync(self):
         _logger.info("Starting My Operator Leads Sync")
-        x = int(time.time()) - 43200
+        # x = int(time.time()) - 43200
+        x = int(time.time()) - 86400
         url = self.env['ir.config_parameter'].sudo().get_param('my_operator.url')
         token = self.env['ir.config_parameter'].sudo().get_param('my_operator.token')
         authorization = self.env['ir.config_parameter'].sudo().get_param('my_operator.authorization')
@@ -106,13 +106,12 @@ class MyOpLeadsSync(models.TransientModel):
 
                         saved_lead = self.env['crm.lead'].create(lead_data)
 
-                        attachment_data = self._get_audio_link(self.record_test(lead['_source']['filename']),
+                        saved_attachment = self._get_audio_link(self.record_test(lead['_source']['filename']),
                                                                             lead['_source']['log_details'][0]['received_by'][0]['name'],
                                                                             saved_lead.lead_qualifier, saved_lead.id)
 
-                        saved_attachment = self.env['ir.attachment'].create(attachment_data)
-
-                        saved_lead.write({'audio_link': saved_attachment.id})
+                        if saved_attachment:
+                            saved_lead.write({'audio_link': saved_attachment})
 
                         _logger.info("Created lead "+ str(i) +":" +  str(lead_data))
                     else:
