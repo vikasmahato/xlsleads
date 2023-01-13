@@ -21,19 +21,24 @@ class MyOpLeadsSync(models.TransientModel):
         return ids
 
 
-    def _get_audio_link(self, file, name, id):
-        if not file:
+    def _get_audio_link(self, file_url, file_name, user_id, lead_id):
+        if not file_url:
             return
-        contents = urlopen(file).read()
-        x = str(date.today()) + '_' + name
+
+        contents = urlopen(file_url).read()
+        file_name = str(date.today()) + '_' + file_name + ".mp3"
+
         attachment_id = self.env['ir.attachment'].create({
-            'name': x,
+            'name': file_name,
             'datas': base64.b64encode(contents),
             'mimetype': 'audio/mpeg',
             'type': 'binary',
-            'display_name': name,
-            'id': id,
-            'res_model': 'crm_lead'
+            'display_name': file_name,
+            'res_model': 'crm.lead',
+            'res_id': lead_id,
+            'create_uid': user_id,
+            'write_uid': user_id,
+            'website_id': 1
         })
         return attachment_id
 
@@ -99,7 +104,16 @@ class MyOpLeadsSync(models.TransientModel):
 
                         lead_data = self._get_lead_data(lead, lead_data, lq, my_op_lead_id)
 
-                        self.env['crm.lead'].create(lead_data)
+                        saved_lead = self.env['crm.lead'].create(lead_data)
+
+                        attachment_data = self._get_audio_link(self.record_test(lead['_source']['filename']),
+                                                                            lead['_source']['log_details'][0]['received_by'][0]['name'],
+                                                                            saved_lead.lead_qualifier, saved_lead.id)
+
+                        saved_attachment = self.env['ir.attachment'].create(attachment_data)
+
+                        saved_lead.write({'audio_link': saved_attachment.id})
+
                         _logger.info("Created lead "+ str(i) +":" +  str(lead_data))
                     else:
                         _logger.info("Lead skipped " + str(i) + ": "  + my_op_lead_id + " exists. Skipping")
@@ -112,18 +126,18 @@ class MyOpLeadsSync(models.TransientModel):
                 pass
 
     def _get_lead_data(self, lead, lead_data, lq, my_op_lead_id):
+
+        lead_qualifier_id = lq[0].id if lq else False
+
         lead_data = {
             'active': True,
             'name': 'Inbound leads',
             'contact_name': lead['_source']['caller_number_raw'],
             'phone': lead['_source']['caller_number'],
             'remote_identifier': my_op_lead_id,
-            'lead_qualifier': lq[0].id if lq else False,
+            'lead_qualifier': lead_qualifier_id,
             'lead_generator': "My Operator",
             'description': lead['_source']["comments"][0]["text"] if len(lead['_source']["comments"]) > 0 else False,
             'source_id': self.get_source_id_from_odoo('INBOUND'),
-            'audio_link': self._get_audio_link(self.record_test(lead['_source']['filename']),
-                                               lead['_source']['log_details'][0]['received_by'][0]['name'],
-                                               lead['_source']['additional_parameters'][0]['vl'])
         }
         return lead_data
