@@ -135,6 +135,7 @@ class MyOpLeadsSync(models.TransientModel):
             'phone': lead['_source']['caller_number'],
             'remote_identifier': my_op_lead_id,
             'lead_qualifier': lead_qualifier_id,
+            'user_id': lq[0].id if lq else False,
             'lead_generator': "My Operator",
             'description': lead['_source']["comments"][0]["text"] if len(lead['_source']["comments"]) > 0 else False,
             'source_id': self.get_source_id_from_odoo('INBOUND'),
