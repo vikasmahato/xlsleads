@@ -88,6 +88,7 @@ class MyOpLeadsSync(models.TransientModel):
 
         lead_data = json_data['data']['hits']
 
+
         _logger.info("Recieved Records Count from MyOperator: " + str(len(lead_data)))
 
         i = 0
@@ -96,7 +97,7 @@ class MyOpLeadsSync(models.TransientModel):
             try:
                 my_op_lead_id = lead['_source']['additional_parameters'][0]['vl']
                 if lead['_source']['department_name'].strip().lower() in departments and lead['_source']['log_details']:
-                    crm_lead = self.env["crm.lead"].search([('remote_identifier', '=', my_op_lead_id)])
+                    crm_lead = self.env["crm.lead"].search([('remote_identifier', '=', my_op_lead_id),('active', 'in',(True,False))])
 
                     if not crm_lead:
                         self.env["res.users"].search([('login', '=', lead['_source']['log_details'][0]['received_by'][0]['email'])]),
